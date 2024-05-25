@@ -23,7 +23,6 @@ const createUser = () => {
   }
 }
 
-console.log(createUser())
 const users = Array.from({ length: 100 }, createUser)
 fs.writeFileSync(
   path.resolve(__dirname, "../fixtures/data.json"),
