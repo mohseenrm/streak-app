@@ -14,8 +14,6 @@ const createUser = () => {
     firstName,
     lastName,
     email,
-    id: faker.string.uuid(),
-    birthday: faker.date.birthdate(),
     plan: faker.helpers.arrayElement(["free", "pro", "premium"]),
     projects: faker.number.int({ min: 0, max: 10 }),
     dateCreated: faker.date.past({ years: 10 }),
