@@ -1,5 +1,5 @@
 "use client"
-import { useRef } from "react"
+import { forwardRef } from "react"
 import { Select, Tag } from "antd"
 import type { SelectProps } from "antd"
 import { QuerySteps } from "@/types"
@@ -21,6 +21,7 @@ type QueryBarProps = {
   onFilter?: (value: any, option: any) => void
   onDeselect?: (value: any) => void
   value?: OptionType[] | string[] | string | number | null
+  ref?: React.Ref<any>
 }
 
 const COLORS = [
@@ -41,7 +42,7 @@ const COLORS = [
   "orange",
 ]
 
-export default function QueryBar(props: QueryBarProps) {
+function QueryBar(props: QueryBarProps) {
   const tagRender: TagRender = (props) => {
     const { label, closable, onClose } = props
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
@@ -80,20 +81,25 @@ export default function QueryBar(props: QueryBarProps) {
   return (
     <Select
       autoFocus
-      showSearch={false}
       style={{ width: "100%" }}
       placeholder="Type to search..."
       options={props.options}
-      searchValue={props.searchValue}
       onChange={props.onChange}
       onDeselect={props.onDeselect}
       // @ts-ignore
       filterOption={props.onFilter}
-      size={"large"}
-      mode={"multiple"}
       onSelect={props.onSelect}
       value={props.value}
+      size={"large"}
+      mode={"multiple"}
       tagRender={tagRender}
+      ref={props.ref}
     />
   )
 }
+
+const QueryBarComponent = forwardRef((props: QueryBarProps, ref) => {
+  return <QueryBar {...props} ref={ref} />
+})
+QueryBarComponent.displayName = "QueryBar"
+export default QueryBarComponent

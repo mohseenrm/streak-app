@@ -1,8 +1,8 @@
 "use client"
 import { useEffect, useCallback, useState, useMemo, useRef } from "react"
 import Title from "@/app/components/title"
-import { Table } from "antd"
-import type { TableColumnsType, TableProps } from "antd"
+import { Card, Table } from "antd"
+import type { TableColumnsType } from "antd"
 import TableData from "@/fixtures/data.json"
 import QueryBar from "@/app/components/QueryBar"
 import type { OptionType } from "@/app/components/QueryBar"
@@ -78,6 +78,25 @@ export default function Home() {
     queryFields: [],
     groupBy: undefined,
   })
+  const queryBarRef = useRef<HTMLDivElement>(null)
+
+  // focus on query bar on load
+  useEffect(() => {
+    queryBarRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && event.metaKey) {
+        queryBarRef.current?.focus()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [])
 
   // add to query when queryField is completed
   useEffect(() => {
@@ -86,7 +105,6 @@ export default function Home() {
       queryField.hasOwnProperty(QueryStep.Operator) &&
       queryField.hasOwnProperty(QueryStep.Value)
     if (isQueryFieldComplete) {
-      // setInputValue((prev) => [...prev, value])
       setQuery((prev) => ({
         ...prev,
         queryFields: [...prev.queryFields, queryField as QueryField],
@@ -233,6 +251,7 @@ export default function Home() {
       },
     ]
   }, [])
+
   const onSelect = useCallback(
     (value: any, option: OptionType) => {
       if (option.step) {
@@ -240,11 +259,14 @@ export default function Home() {
           ...prev,
           // @ts-ignore
           [option.step]: value,
+          // Store friendly value for display and removing from query when user deselects
           friendlyValue:
             option.step === QueryStep.Value
               ? `${prev.field} ${OperationLookup[prev.operator!]} ${value}`
               : undefined,
         }))
+
+        // Update options based on selected step
         if (option.step === QueryStep.Field) {
           if (query.queryFields.length > 0) {
             setInputValue((prev) => [...prev, value])
@@ -292,10 +314,15 @@ export default function Home() {
 
   const onFilter = useCallback((value: any, option: OptionType) => {
     const tokens = value.split(" ").filter(Boolean)
-    if (tokens.length > 1) {
+    if (tokens.length > 0) {
       const lastToken = tokens.pop()
-      // @ts-ignore
-      return option.label!.toLowerCase().includes(lastToken.toLowerCase())
+
+      if (typeof option.label === "string") {
+        return option.label!.toLowerCase().includes(lastToken.toLowerCase())
+      } else if (typeof option.label === "number") {
+        const numStr = option.label.toString()
+        return numStr.toLowerCase().includes(lastToken.toLowerCase())
+      }
     }
     return true
   }, [])
@@ -315,6 +342,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between text-sm lg:flex flex-col">
         <Title level={1}>Streak Demo App</Title>
+        <div className="mb-10 mt-10 w-full">
+          <Card>Press ⌘ +k to start filtering</Card>
+        </div>
         <div className="mb-10 w-full">
           <QueryBar
             options={currentOptions}
@@ -322,6 +352,7 @@ export default function Home() {
             value={inputValue}
             onFilter={onFilter}
             onDeselect={onDeselect}
+            ref={queryBarRef}
           />
         </div>
         <Table dataSource={filtedData} columns={columns} sticky />
