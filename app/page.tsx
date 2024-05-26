@@ -8,6 +8,7 @@ import QueryBar from "@/app/components/QueryBar"
 import type { OptionType } from "@/app/components/QueryBar"
 import { format } from "date-fns"
 import {
+  OperationLookup,
   TableDataEntity,
   Operator,
   QueryField,
@@ -142,6 +143,10 @@ export default function Home() {
           ...prev,
           // @ts-ignore
           [option.step]: value,
+          friendlyValue:
+            option.step === QueryStep.Value
+              ? `${prev.field} ${OperationLookup[prev.operator!]} ${value}`
+              : undefined,
         }))
         if (option.step === QueryStep.Field) {
           if (query.queryFields.length > 0) {
@@ -198,6 +203,17 @@ export default function Home() {
     return true
   }, [])
 
+  // remove from query when tag is removed
+  const onDeselect = useCallback((value: any) => {
+    setInputValue((prev) => prev.filter((v) => v !== value))
+    setQuery((prev) => ({
+      ...prev,
+      queryFields: prev.queryFields.filter(
+        (queryField) => queryField.friendlyValue !== value
+      ),
+    }))
+  }, [])
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between text-sm lg:flex flex-col">
@@ -208,6 +224,7 @@ export default function Home() {
             onSelect={onSelect}
             value={inputValue}
             onFilter={onFilter}
+            onDeselect={onDeselect}
           />
         </div>
         <Table dataSource={filtedData} columns={columns} sticky />

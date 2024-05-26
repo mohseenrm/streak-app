@@ -14,11 +14,22 @@ export const QueryStep = {
 } as const
 export type QuerySteps = (typeof QueryStep)[keyof typeof QueryStep]
 export type Operations = (typeof Operator)[keyof typeof Operator]
+export const OperationLookup = Object.keys(Operator).reduce<{
+  [k in Operations]: string
+}>(
+  (acc, key) => {
+    // @ts-ignore
+    acc[Operator[key]] = key
+    return acc
+  },
+  {} as { [k in Operations]: string }
+)
 export type Value = string | number | boolean | Date
 export type QueryField = {
   field: Field
   operator: Operations
   value: Value
+  friendlyValue: string
 }
 export type GroupByField = string
 export type Query = {

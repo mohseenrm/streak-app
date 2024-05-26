@@ -19,6 +19,7 @@ type QueryBarProps = {
   onSelect?: (value: any, option: OptionType) => void
   onChange?: (value: any, option: OptionType | Array<OptionType>) => void
   onFilter?: (value: any, option: any) => void
+  onDeselect?: (value: any) => void
   value?: OptionType[] | string[] | string | number | null
 }
 
@@ -47,6 +48,8 @@ export default function QueryBar(props: QueryBarProps) {
       event.preventDefault()
       event.stopPropagation()
     }
+
+    // Using fixed indexes to keep colors consistent
     let colorIdx = 0
     if (typeof label === "string" && label.includes(">=")) {
       colorIdx = 1
@@ -83,6 +86,7 @@ export default function QueryBar(props: QueryBarProps) {
       options={props.options}
       searchValue={props.searchValue}
       onChange={props.onChange}
+      onDeselect={props.onDeselect}
       // @ts-ignore
       filterOption={props.onFilter}
       size={"large"}
