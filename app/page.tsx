@@ -113,19 +113,105 @@ export default function Home() {
     }
   }, [query])
 
-  const columns: TableColumnsType<any> = useMemo(() => {
+  const columns: TableColumnsType<TableDataEntity> = useMemo(() => {
     return [
-      { title: "First Name", dataIndex: "firstName", key: "firstName" },
-      { title: "Last Name", dataIndex: "lastName", key: "lastName" },
-      { title: "Email", dataIndex: "email", key: "email" },
-      { title: "Plan", dataIndex: "plan", key: "plan" },
-      { title: "Projects", dataIndex: "projects", key: "projects" },
+      {
+        title: "First Name",
+        dataIndex: "firstName",
+        key: "firstName",
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.firstName < b.firstName) {
+            return -1
+          }
+          if (a.firstName > b.firstName) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
+      },
+      {
+        title: "Last Name",
+        dataIndex: "lastName",
+        key: "lastName",
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.lastName < b.lastName) {
+            return -1
+          }
+          if (a.lastName > b.lastName) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
+      },
+      {
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.email < b.email) {
+            return -1
+          }
+          if (a.email > b.email) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
+      },
+      {
+        title: "Plan",
+        dataIndex: "plan",
+        key: "plan",
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.plan < b.plan) {
+            return -1
+          }
+          if (a.plan > b.plan) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
+      },
+      {
+        title: "Projects",
+        dataIndex: "projects",
+        key: "projects",
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.projects < b.projects) {
+            return -1
+          }
+          if (a.projects > b.projects) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
+      },
       {
         title: "Date Created",
         dataIndex: "dateCreated",
         key: "dateCreated",
         render: (text: string) =>
           format(new Date(text), "LLL dd yyyy, hh:mm:ss"),
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.dateCreated < b.dateCreated) {
+            return -1
+          }
+          if (a.dateCreated > b.dateCreated) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
       },
       {
         title: "Date Updated",
@@ -133,6 +219,17 @@ export default function Home() {
         key: "dateUpdated",
         render: (text: string) =>
           format(new Date(text), "LLL dd yyyy, hh:mm:ss"),
+        showSorterTooltip: { target: "full-header" },
+        sorter: (a: TableDataEntity, b: TableDataEntity) => {
+          if (a.dateUpdated < b.dateUpdated) {
+            return -1
+          }
+          if (a.dateUpdated > b.dateUpdated) {
+            return 1
+          }
+          return 0
+        },
+        sortDirections: ["descend", "ascend"],
       },
     ]
   }, [])
