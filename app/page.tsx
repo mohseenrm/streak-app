@@ -408,6 +408,7 @@ export default function Home() {
             ref={queryBarRef}
           />
           <Select
+            data-testid={"group-by"}
             mode="multiple"
             maxTagCount={1}
             placeholder="Group By"
@@ -422,7 +423,12 @@ export default function Home() {
             }
           />
         </div>
-        <Table dataSource={filteredData} columns={columns} sticky />
+        <Table
+          data-testid={"table-data"}
+          dataSource={filteredData}
+          columns={columns}
+          sticky
+        />
       </div>
     </main>
   )

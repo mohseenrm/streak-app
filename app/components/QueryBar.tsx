@@ -73,6 +73,7 @@ function QueryBar(props: QueryBarProps) {
         closable={closable}
         onClose={onClose}
         style={{ marginInlineEnd: 4 }}
+        data-testid={label}
       >
         {label}
       </Tag>
@@ -94,6 +95,7 @@ function QueryBar(props: QueryBarProps) {
       mode={"multiple"}
       tagRender={tagRender}
       ref={props.ref}
+      data-testid={"query-bar"}
     />
   )
 }
