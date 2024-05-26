@@ -125,11 +125,18 @@ export default function Home() {
           queryField.value
         )
       }
+
+      if (query.groupBy) {
+        data = model.current.groupDataByRows(
+          data,
+          query.groupBy as keyof TableDataEntity
+        )
+      }
       setFilteredData(data)
     } else {
       setFilteredData(model.current.data)
     }
-  }, [query.queryFields])
+  }, [query])
 
   useEffect(() => {
     if (query.groupBy) {
