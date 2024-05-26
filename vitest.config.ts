@@ -8,5 +8,6 @@ export default defineConfig({
     alias: {
       "@/": new URL(".", import.meta.url).pathname,
     },
+    setupFiles: ["./scripts/index.ts"],
   },
 })
