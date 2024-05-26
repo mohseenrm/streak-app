@@ -25,3 +25,12 @@ export type Query = {
   queryFields: QueryField[]
   groupBy?: GroupByField
 }
+export type TableDataEntity = {
+  firstName: string
+  lastName: string
+  email: string
+  plan: "free" | "pro" | "premium"
+  projects: number
+  dateCreated: string
+  dateUpdated: string
+}

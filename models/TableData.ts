@@ -4,14 +4,14 @@ export class TableData<
   TData extends Record<string, unknown>,
   TColumns extends keyof TData,
 > {
-  private data: TData[] = []
+  private _data: TData[] = []
 
   constructor(data: TData[]) {
-    this.data = data
+    this._data = data
   }
 
-  public getData(): Readonly<TData[]> {
-    return this.data
+  get data(): Readonly<TData[]> {
+    return this._data
   }
 
   public filter(
@@ -19,7 +19,16 @@ export class TableData<
     operator: Operations,
     value: string | number | boolean | Date
   ): TData[] {
-    return this.data.filter((row) => {
+    return this.filterData(this._data, field, operator, value)
+  }
+
+  public filterData(
+    data: Readonly<TData[]>,
+    field: TColumns,
+    operator: Operations,
+    value: string | number | boolean | Date
+  ): TData[] {
+    return data.filter((row) => {
       switch (operator) {
         case Operator[">"]:
           return row[field] > value
@@ -40,7 +49,7 @@ export class TableData<
   }
 
   public groupBy(field: TColumns): Record<string, TData[]> {
-    return this.data.reduce<Record<string, TData[]>>((acc, row) => {
+    return this._data.reduce<Record<string, TData[]>>((acc, row) => {
       const key = row[field] as string
       if (acc[key]) {
         acc[key].push(row)

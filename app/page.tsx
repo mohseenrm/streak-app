@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useCallback, useState, useMemo } from "react"
+import { useEffect, useCallback, useState, useMemo, useRef } from "react"
 import Title from "@/app/components/title"
 import { Table } from "antd"
 import type { TableColumnsType, TableProps } from "antd"
@@ -7,10 +7,25 @@ import TableData from "@/fixtures/data.json"
 import QueryBar from "@/app/components/QueryBar"
 import type { OptionType } from "@/app/components/QueryBar"
 import { format } from "date-fns"
-import { Operator, QueryField, QueryStep, Query } from "@/types"
+import {
+  TableDataEntity,
+  Operator,
+  QueryField,
+  QueryStep,
+  Query,
+} from "@/types"
+import { TableData as TableDataModel } from "@/models/TableData"
 
 export default function Home() {
-  const fields = useMemo(() => Object.keys(TableData[0]), [])
+  const model = useRef<TableDataModel<TableDataEntity, keyof TableDataEntity>>(
+    new TableDataModel<TableDataEntity, keyof TableDataEntity>(
+      TableData as TableDataEntity[]
+    )
+  )
+  const [filtedData, setFilteredData] = useState<Readonly<TableDataEntity[]>>(
+    model.current.data
+  )
+  const fields = useMemo(() => Object.keys(model.current.data[0]), [])
   const fieldOptions = useMemo(
     () =>
       fields.map((field) => ({
@@ -31,12 +46,13 @@ export default function Home() {
       })),
     []
   )
+
   const indexes = useMemo(() => {
     const _indexes: Record<string, Set<any>> = {}
-    Object.keys(TableData[0]).map((field) => {
+    Object.keys(model.current.data[0]).map((field) => {
       _indexes[field] = new Set()
     })
-    TableData.map((row) => {
+    model.current.data.map((row) => {
       Object.entries(row).map(([key, value]) => {
         _indexes[key].add(value)
       })
@@ -62,6 +78,7 @@ export default function Home() {
     groupBy: undefined,
   })
 
+  // add to query when queryField is completed
   useEffect(() => {
     const isQueryFieldComplete =
       queryField.hasOwnProperty(QueryStep.Field) &&
@@ -77,6 +94,23 @@ export default function Home() {
       setCurrentOptions(fieldOptions)
     }
   }, [queryField])
+
+  useEffect(() => {
+    if (query.queryFields.length > 0) {
+      let data = model.current.data
+      for (const queryField of query.queryFields) {
+        data = model.current.filterData(
+          data,
+          queryField.field as keyof TableDataEntity,
+          queryField.operator,
+          queryField.value
+        )
+      }
+      setFilteredData(data)
+    } else {
+      setFilteredData(model.current.data)
+    }
+  }, [query])
 
   const columns: TableColumnsType<any> = useMemo(() => {
     return [
@@ -167,7 +201,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between text-sm lg:flex flex-col">
-        <Title level={1}>Streak App</Title>
+        <Title level={1}>Streak Demo App</Title>
         <div className="mb-10 w-full">
           <QueryBar
             options={currentOptions}
@@ -176,7 +210,7 @@ export default function Home() {
             onFilter={onFilter}
           />
         </div>
-        <Table dataSource={TableData} columns={columns} sticky />
+        <Table dataSource={filtedData} columns={columns} sticky />
       </div>
     </main>
   )
