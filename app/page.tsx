@@ -29,10 +29,34 @@ export default function Home() {
       })),
     []
   )
+  const indexes = useMemo(() => {
+    const _indexes: Record<string, Set<any>> = {}
+    Object.keys(TableData[0]).map((field) => {
+      _indexes[field] = new Set()
+    })
+    TableData.map((row) => {
+      Object.entries(row).map(([key, value]) => {
+        _indexes[key].add(value)
+      })
+    })
+    const _friendlyIndexes: Record<string, any[]> = {}
+    Object.entries(_indexes).map(([key, value]) => {
+      const _value = Array.from(value)
+      if (typeof _value[0] === "number") {
+        _value.sort((a, b) => a - b)
+      } else {
+        _value.sort()
+      }
+      _friendlyIndexes[key] = _value
+    })
+    return _friendlyIndexes
+  }, [])
+  console.log("DEBUG indexes", indexes)
   const [currentOptions, setCurrentOptions] =
     useState<OptionType[]>(fieldOptions)
   const [queryField, setQueryField] = useState<Partial<QueryField>>({})
   const [searchValue, setSearchValue] = useState<string>("")
+  const [inputValue, setInputValue] = useState<string[]>([])
 
   const columns: TableColumnsType<any> = [
     { title: "First Name", dataIndex: "firstName", key: "firstName" },
@@ -64,27 +88,73 @@ export default function Home() {
         [option.step]: value,
       }))
       if (option.step === QueryStep.Operator) {
-        setSearchValue((prev) => `${prev} ${option.label}`)
+        if (inputValue.length > 0) {
+          const updatedInput = [...inputValue]
+          updatedInput[updatedInput.length - 1] =
+            `${updatedInput[updatedInput.length - 1]} ${option.label}`
+          setInputValue(updatedInput)
+        } else {
+          setInputValue([value])
+        }
       } else {
-        setSearchValue((prev) => `${prev} ${value}`)
+        if (inputValue.length > 0) {
+          const updatedInput = [...inputValue]
+          updatedInput[updatedInput.length - 1] =
+            `${updatedInput[updatedInput.length - 1]} ${value}`
+          setInputValue(updatedInput)
+        } else {
+          setInputValue([value])
+        }
       }
-      setCurrentOptions(operatorOptions)
+
+      if (option.step === QueryStep.Field) {
+        setCurrentOptions(operatorOptions)
+      } else if (option.step === QueryStep.Operator) {
+        console.log("DEBUG field: ", queryField.field)
+        const valueOptions = indexes[queryField.field as string].map(
+          (value: any) => ({
+            label: value,
+            value: value,
+            step: QueryStep.Value,
+          })
+        )
+        console.log("DEBUG valueOptions", valueOptions)
+        setCurrentOptions(valueOptions)
+      }
     }
   }
+  console.log("DEBUG inputValue", inputValue)
   const onChange = (value: any, option: OptionType | Array<OptionType>) => {
     console.log("DEBUG onChange value", value)
-    console.log("DEBUG onChange option", option)
+    console.log("DEBUG onChange option", JSON.stringify(option))
+    // setInputValue(value)
+    const isQueryFieldComplete =
+      queryField.hasOwnProperty(QueryStep.Field) &&
+      queryField.hasOwnProperty(QueryStep.Operator) &&
+      queryField.hasOwnProperty(QueryStep.Value)
+    if (isQueryFieldComplete) {
+      setInputValue((prev) => [...prev, value])
+      setQueryField({})
+      setSearchValue("")
+      setCurrentOptions(fieldOptions)
+    } else {
+      // setInputValue([option.value as string])
+      // setInputValue(value)
+    }
   }
   const onFilter = (value: any, option: OptionType) => {
-    console.log("DEBUG onFilter value", value)
-    console.log("DEBUG onFilter option", option)
-    const tokens = searchValue.split(" ").filter(Boolean)
-    console.log("DEBUG onFilter tokens", tokens)
+    const tokens = value.split(" ").filter(Boolean)
+    // console.log("DEBUG onFilter tokens", tokens)
     if (tokens.length > 1) {
       const lastToken = tokens.pop()
+      // @ts-ignore
       return option.label!.toLowerCase().includes(lastToken.toLowerCase())
     }
     return true
+  }
+
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log("DEBUG oninputKeyDown e", e)
   }
 
   return (
@@ -94,12 +164,16 @@ export default function Home() {
         <div className="mb-10 w-full">
           <QueryBar
             options={currentOptions}
-            searchValue={searchValue}
+            // searchValue={searchValue}
             onSelect={onSelect}
-            value={[
-              { label: "somethings", value: "somethings" },
-              { label: "else", value: "else" },
-            ]}
+            // onInputKeyDown={onInputKeyDown}
+            value={
+              //   [
+              //   { label: "somethings", value: "somethings" },
+              //   { label: "else", value: "else" },
+              // ]
+              inputValue
+            }
             onChange={onChange}
             onFilter={onFilter}
           />

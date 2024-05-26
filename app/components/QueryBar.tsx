@@ -15,7 +15,8 @@ type QueryBarProps = {
   onSelect?: (value: any, option: OptionType) => void
   onChange?: (value: any, option: OptionType | Array<OptionType>) => void
   onFilter?: (value: any, option: any) => void
-  value?: OptionType[] | string | number | null
+  onInputKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  value?: OptionType[] | string[] | string | number | null
 }
 
 export default function QueryBar(props: QueryBarProps) {
@@ -27,6 +28,7 @@ export default function QueryBar(props: QueryBarProps) {
       options={props.options}
       searchValue={props.searchValue}
       onChange={props.onChange}
+      onInputKeyDown={props.onInputKeyDown}
       // @ts-ignore
       filterOption={props.onFilter}
       size={"large"}
