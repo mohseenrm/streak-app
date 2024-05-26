@@ -1,6 +1,10 @@
 "use client"
-import { Select } from "antd"
+import { useRef } from "react"
+import { Select, Tag } from "antd"
+import type { SelectProps } from "antd"
 import { QuerySteps } from "@/types"
+
+type TagRender = SelectProps<any>["tagRender"]
 
 export type OptionType = {
   label?: React.ReactNode
@@ -18,10 +22,62 @@ type QueryBarProps = {
   value?: OptionType[] | string[] | string | number | null
 }
 
+const COLORS = [
+  undefined,
+  "green",
+  "cyan",
+  "blue",
+  "lime",
+  "geekblue",
+  "purple",
+  "success",
+  "gold",
+  "volcano",
+  "processing",
+  "magenta",
+  "warning",
+  "red",
+  "orange",
+]
+
 export default function QueryBar(props: QueryBarProps) {
+  const tagRender: TagRender = (props) => {
+    const { label, value, closable, onClose } = props
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    let colorRef = 0
+    if (typeof label === "string" && label.includes(">=")) {
+      colorRef = 1
+    } else if (typeof label === "string" && label.includes(">")) {
+      colorRef = 2
+    } else if (typeof label === "string" && label.includes("<=")) {
+      colorRef = 3
+    } else if (typeof label === "string" && label.includes("<")) {
+      colorRef = 4
+    } else if (typeof label === "string" && label.includes("!")) {
+      colorRef = 5
+    } else if (typeof label === "string" && label.includes("=")) {
+      colorRef = 6
+    }
+
+    return (
+      <Tag
+        color={COLORS[colorRef]}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{ marginInlineEnd: 4 }}
+      >
+        {label}
+      </Tag>
+    )
+  }
   return (
     <Select
       autoFocus
+      showSearch={false}
       style={{ width: "100%" }}
       placeholder="Type to search..."
       options={props.options}
@@ -33,6 +89,7 @@ export default function QueryBar(props: QueryBarProps) {
       mode={"multiple"}
       onSelect={props.onSelect}
       value={props.value}
+      tagRender={tagRender}
     />
   )
 }
