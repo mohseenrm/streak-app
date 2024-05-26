@@ -42,24 +42,24 @@ const COLORS = [
 
 export default function QueryBar(props: QueryBarProps) {
   const tagRender: TagRender = (props) => {
-    const { label, value, closable, onClose } = props
+    const { label, closable, onClose } = props
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
       event.preventDefault()
       event.stopPropagation()
     }
-    let colorRef = 0
+    let colorIdx = 0
     if (typeof label === "string" && label.includes(">=")) {
-      colorRef = 1
+      colorIdx = 1
     } else if (typeof label === "string" && label.includes(">")) {
-      colorRef = 2
+      colorIdx = 2
     } else if (typeof label === "string" && label.includes("<=")) {
-      colorRef = 3
+      colorIdx = 3
     } else if (typeof label === "string" && label.includes("<")) {
-      colorRef = 4
+      colorIdx = 4
     } else if (typeof label === "string" && label.includes("!")) {
-      colorRef = 5
+      colorIdx = 5
     } else if (typeof label === "string" && label.includes("=")) {
-      colorRef = 6
+      colorIdx = 6
     }
 
     return (
