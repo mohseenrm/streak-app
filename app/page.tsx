@@ -23,7 +23,7 @@ export default function Home() {
       TableData as TableDataEntity[]
     )
   )
-  const [filtedData, setFilteredData] = useState<Readonly<TableDataEntity[]>>(
+  const [filteredData, setFilteredData] = useState<Readonly<TableDataEntity[]>>(
     model.current.data
   )
   const fields = useMemo(() => Object.keys(model.current.data[0]), [])
@@ -133,7 +133,8 @@ export default function Home() {
 
   useEffect(() => {
     if (query.groupBy) {
-      const groupedData = model.current.groupByRows(
+      const groupedData = model.current.groupDataByRows(
+        filteredData,
         query.groupBy as keyof TableDataEntity
       )
       setFilteredData(groupedData)
@@ -414,7 +415,7 @@ export default function Home() {
             }
           />
         </div>
-        <Table dataSource={filtedData} columns={columns} sticky />
+        <Table dataSource={filteredData} columns={columns} sticky />
       </div>
     </main>
   )

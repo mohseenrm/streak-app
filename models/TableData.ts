@@ -60,17 +60,28 @@ export class TableData<
     }, {})
   }
 
-  public groupByRows(field: TColumns): Array<TableDataGroup | TData> {
+  public groupDataByRows(
+    data: Readonly<TData[]>,
+    field: TColumns
+  ): Array<TableDataGroup | TData> {
     const results: Array<TableDataGroup | TData> = []
-    Object.entries(this.groupBy(field)).map(
-      ([key, value]: [string, TData[]]) => {
-        const row = { field, value: key, ...value[0] }
-        results.push(row)
-        value.forEach((row) => {
-          results.push(row)
-        })
+    const groups = data.reduce<Record<string, TData[]>>((acc, row) => {
+      const key = row[field] as string
+      if (acc[key]) {
+        acc[key].push(row)
+      } else {
+        acc[key] = [row]
       }
-    )
+      return acc
+    }, {})
+
+    Object.entries(groups).map(([key, value]: [string, TData[]]) => {
+      const row = { field, value: key, ...value[0] }
+      results.push(row)
+      value.forEach((row) => {
+        results.push(row)
+      })
+    })
     return results
   }
 }
