@@ -12,10 +12,13 @@ body {
   background-color: #0f1213;
 }
 
-.ant-tag {
+.ant-tag,
+.ant-select {
   font-size: 1rem;
-  padding: 0.25rem 0.5rem;
-  margin: 0.25rem;
+}
+.ant-tag {
+  margin: 0px 5px;
+  padding: 0.25rem 0.75rem;
 }
 
 @layer utilities {

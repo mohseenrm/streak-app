@@ -45,3 +45,7 @@ export type TableDataEntity = {
   dateCreated: string
   dateUpdated: string
 }
+export type TableDataGroup = {
+  field: string
+  value: string | number | boolean | Date
+} & TableDataEntity

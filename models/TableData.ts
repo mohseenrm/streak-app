@@ -1,4 +1,4 @@
-import { Operator, Operations } from "@/types"
+import { Operator, Operations, TableDataGroup } from "@/types"
 
 export class TableData<
   TData extends Record<string, unknown>,
@@ -60,13 +60,11 @@ export class TableData<
     }, {})
   }
 
-  public groupByRows(
-    field: TColumns
-  ): Array<{ field: TColumns; value: string } | TData> {
-    const results: Array<{ field: TColumns; value: string } | TData> = []
+  public groupByRows(field: TColumns): Array<TableDataGroup | TData> {
+    const results: Array<TableDataGroup | TData> = []
     Object.entries(this.groupBy(field)).map(
       ([key, value]: [string, TData[]]) => {
-        const row = { field, value: key }
+        const row = { field, value: key, ...value[0] }
         results.push(row)
         value.forEach((row) => {
           results.push(row)

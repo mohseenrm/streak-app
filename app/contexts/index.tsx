@@ -15,6 +15,8 @@ export default function Providers({
         },
         components: {
           Select: {
+            multipleItemHeightLG: 40,
+            singleItemHeightLG: 40,
             optionFontSize: 15,
             optionLineHeight: 2,
             multipleItemHeight: 30,

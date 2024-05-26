@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useCallback, useState, useMemo, useRef } from "react"
 import Title from "@/app/components/title"
-import { Card, Table } from "antd"
+import { Select, Card, Table, Tag } from "antd"
 import type { TableColumnsType } from "antd"
 import TableData from "@/fixtures/data.json"
 import QueryBar from "@/app/components/QueryBar"
@@ -129,7 +129,18 @@ export default function Home() {
     } else {
       setFilteredData(model.current.data)
     }
-  }, [query])
+  }, [query.queryFields])
+
+  useEffect(() => {
+    if (query.groupBy) {
+      const groupedData = model.current.groupByRows(
+        query.groupBy as keyof TableDataEntity
+      )
+      setFilteredData(groupedData)
+    } else {
+      setFilteredData(model.current.data)
+    }
+  }, [query.groupBy])
 
   const columns: TableColumnsType<TableDataEntity> = useMemo(() => {
     return [
@@ -148,6 +159,16 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        render: (text: string, record: TableDataEntity) => {
+          if (record.hasOwnProperty("field")) {
+            // @ts-ignore
+            return <Tag color={"cyan"}>{record.value}</Tag>
+          }
+          return text
+        },
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 7 : 1,
+        }),
       },
       {
         title: "Last Name",
@@ -164,6 +185,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
       {
         title: "Email",
@@ -180,6 +205,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
       {
         title: "Plan",
@@ -196,6 +225,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
       {
         title: "Projects",
@@ -212,6 +245,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
       {
         title: "Date Created",
@@ -230,6 +267,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
       {
         title: "Date Updated",
@@ -248,6 +289,10 @@ export default function Home() {
           return 0
         },
         sortDirections: ["descend", "ascend"],
+        onCell: (record: TableDataEntity) => ({
+          colSpan: record.hasOwnProperty("field") ? 0 : 1,
+          rowSpan: record.hasOwnProperty("field") ? 0 : 1,
+        }),
       },
     ]
   }, [])
@@ -345,7 +390,7 @@ export default function Home() {
         <div className="mb-10 mt-10 w-full">
           <Card>Press ⌘ +k to start filtering</Card>
         </div>
-        <div className="mb-10 w-full">
+        <div className="mb-10 w-full flex">
           <QueryBar
             options={currentOptions}
             onSelect={onSelect}
@@ -353,6 +398,20 @@ export default function Home() {
             onFilter={onFilter}
             onDeselect={onDeselect}
             ref={queryBarRef}
+          />
+          <Select
+            mode="multiple"
+            maxTagCount={1}
+            placeholder="Group By"
+            style={{ flexGrow: "1", marginLeft: "10px" }}
+            options={fieldOptions}
+            value={query.groupBy}
+            onSelect={(value) =>
+              setQuery((prev) => ({ ...prev, groupBy: value }))
+            }
+            onDeselect={() =>
+              setQuery((prev) => ({ ...prev, groupBy: undefined }))
+            }
           />
         </div>
         <Table dataSource={filtedData} columns={columns} sticky />

@@ -81,7 +81,7 @@ function QueryBar(props: QueryBarProps) {
   return (
     <Select
       autoFocus
-      style={{ width: "100%" }}
+      style={{ flexGrow: "10" }}
       placeholder="Type to search..."
       options={props.options}
       onChange={props.onChange}
