@@ -64,7 +64,7 @@ export default function QueryBar(props: QueryBarProps) {
 
     return (
       <Tag
-        color={COLORS[colorRef]}
+        color={COLORS[colorIdx]}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
